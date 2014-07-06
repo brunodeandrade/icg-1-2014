@@ -51,7 +51,7 @@ float angle = 0.0;
 static float	surface[6 * RESOLUTION * (RESOLUTION + 1)];
 static float	normal[6 * RESOLUTION * (RESOLUTION + 1)];
 
-float xpos = 0, ypos = 0, zpos = 0, xrot = 0, yrot = 0;
+float xpos = 0.568, ypos = 0.6351, zpos = 3.2824, xrot = 3, yrot = 68;
 
 float lastx, lasty;
 
@@ -119,7 +119,7 @@ int		load_texture (const char * filename,
 void		DisplayFunc (void)
 {
   const float t = glutGet (GLUT_ELAPSED_TIME) / 1000.;
-  const float delta = 4. / RESOLUTION;
+  const float delta = 10. / RESOLUTION;
   const unsigned int length = 2 * (RESOLUTION + 1);
   const float xn = (RESOLUTION + 1) * delta + 1;
   unsigned int i;
@@ -172,10 +172,14 @@ void		DisplayFunc (void)
   // gluLookAt(0,0,1,rotate_x,1,0, 0,1,0);
   // gluLookAt(0,0,1,0,rotate_y,0, 0,1,0);
 
-  glRotatef(xrot,1.0,0.0,0.0);  //rotate our camera on teh x-axis (left and right)
-  glRotatef(yrot,0.0,1.0,0.0);  //rotate our camera on the y-axis (up and down)
+  if(xrot >= 3 ){
+    glRotatef(xrot,1.0,0.0,0.0);  //rotate our camera on teh x-axis (left and right)
+    glRotatef(yrot,0.0,1.0,0.0);  //rotate our camera on the y-axis (up and down)
+  }
   glTranslated(-xpos,-ypos,-zpos); //translate the screen to the position of our camera
 
+  // printf("xpos: %f, ypos: %f, zpos: %f\n\n",xpos,ypos,zpos);
+  // printf("xrot: %f, yrot: %f, zrot: %f\n\n",xrot,yrot,zpos);
 
 /*
 glTranslatef ( obsX , obsY , obsZ ) ;
@@ -476,15 +480,6 @@ void		MouseFunc (int button, int state, int x, int y)
 }
 
 
-void mouseMovement(int x, int y) {
-    int diffx=x-lastx; //check the difference between the current x and the last x position
-    int diffy=y-lasty; //check the difference between the current y and the last y position
-    lastx=x; //set lastx to the current x position
-    lasty=y; //set lasty to the current y position
-    xrot += (float) diffy; //set the xrot to xrot with the addition of the difference in the y position
-    yrot += (float) diffx;    //set the xrot to yrot with the addition of the difference in the x position
-}
-
 
 
 /*
@@ -518,6 +513,20 @@ void		MotionFunc (int x, int y)
 }
 
 
+
+void mouseMovement(int x, int y) {
+    printf("X do mouse: %d",x);
+    printf("xrot: %f\n", xrot);
+    int diffx=x-lastx; //check the difference between the current x and the last x position
+    int diffy=y-lasty; //check the difference between the current y and the last y position
+    lastx=x; //set lastx to the current x position
+    lasty=y; //set lasty to the current y position
+    xrot += (float) diffy/50; //set the xrot to xrot with the addition of the difference in the y position
+    yrot += (float) diffx/5;    //set the xrot to yrot with the addition of the difference in the x position
+}
+
+
+
 void keyboard (unsigned char key, int x, int y) {
     x += y;
 
@@ -543,6 +552,7 @@ void keyboard (unsigned char key, int x, int y) {
     xpos += (float) sin(yrotrad) ;
     zpos -= (float) cos(yrotrad) ;
     ypos -= (float)sin(xrotrad);
+
     }
 
     if (key=='s')
@@ -570,6 +580,7 @@ void keyboard (unsigned char key, int x, int y) {
     xpos -= (float)cos(yrotrad) * 0.2;
     zpos -= (float)sin(yrotrad) * 0.2;
     }
+
 
     if (key==27)
     {
