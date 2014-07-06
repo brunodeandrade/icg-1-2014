@@ -42,7 +42,7 @@ static int	yold = 0;
 
 //gluPerspective (20, width / (float) height, 0.1, 15);
 
-static GLdouble obsX = 0, obsY = 0, obsZ = 1; 
+static GLdouble obsX = -2.400000, obsY =  0.4, obsZ = 1.30; 
 int cont = 0;
 static float	rotate_x = 30;
 static float	rotate_y = 15;
@@ -50,6 +50,10 @@ static float	translate_z = 4;
 float angle = 0.0;
 static float	surface[6 * RESOLUTION * (RESOLUTION + 1)];
 static float	normal[6 * RESOLUTION * (RESOLUTION + 1)];
+
+float xpos = 0, ypos = 0, zpos = 0, xrot = 0, yrot = 0;
+
+float lastx, lasty;
 
 
 static float	z (const float x, const float y, const float t)
@@ -115,7 +119,7 @@ int		load_texture (const char * filename,
 void		DisplayFunc (void)
 {
   const float t = glutGet (GLUT_ELAPSED_TIME) / 1000.;
-  const float delta = 2. / RESOLUTION;
+  const float delta = 4. / RESOLUTION;
   const unsigned int length = 2 * (RESOLUTION + 1);
   const float xn = (RESOLUTION + 1) * delta + 1;
   unsigned int i;
@@ -162,16 +166,23 @@ void		DisplayFunc (void)
 
   glLoadIdentity ();
   glTranslatef (0, 0, -translate_z);
-  glRotatef (rotate_y, 1, 0, 0);
-  glRotatef (rotate_x, 0, 1, 0);
+  ///glRotatef (rotate_y, 1, 0, 0);
+  //glRotatef (rotate_x, 0, 1, 0);
 
-  gluLookAt(0,0,1,0,0,0, 0,1,0);
+  // gluLookAt(0,0,1,rotate_x,1,0, 0,1,0);
+  // gluLookAt(0,0,1,0,rotate_y,0, 0,1,0);
+
+  glRotatef(xrot,1.0,0.0,0.0);  //rotate our camera on teh x-axis (left and right)
+  glRotatef(yrot,0.0,1.0,0.0);  //rotate our camera on the y-axis (up and down)
+  glTranslated(-xpos,-ypos,-zpos); //translate the screen to the position of our camera
 
 
-//  glTranslatef (0 ,0 ,−zoom ) ;
+/*
 glTranslatef ( obsX , obsY , obsZ ) ;
+printf("x: %f y: %f, z: %f",obsX,obsY,obsZ);
+printf("\n\n");
 glRotatef ( 0 ,1 ,0 ,0);
-glRotatef ( 0 ,0 ,1 ,0);
+glRotatef ( 0 ,0 ,1 ,0);*/
   //gluLookAt(obsX,obsY,obsZ, 0,0,0, 0,0,1);
   //gluLookAt(0,0,1, obsX,obsY,obsZ, 0,1,0);
   //glMatrixMode(GL_MODELVIEW); 
@@ -323,7 +334,7 @@ glRotatef ( 0 ,0 ,1 ,0);
   glTranslatef (0, 0.2, 0);
 
 
-  display(angle);
+  //display(angle);
 
   angle += 0.5;
   if(angle > 360)
@@ -464,6 +475,18 @@ void		MouseFunc (int button, int state, int x, int y)
   yold = y;
 }
 
+
+void mouseMovement(int x, int y) {
+    int diffx=x-lastx; //check the difference between the current x and the last x position
+    int diffy=y-lasty; //check the difference between the current y and the last y position
+    lastx=x; //set lastx to the current x position
+    lasty=y; //set lasty to the current y position
+    xrot += (float) diffy; //set the xrot to xrot with the addition of the difference in the y position
+    yrot += (float) diffx;    //set the xrot to yrot with the addition of the difference in the x position
+}
+
+
+
 /*
 ** Function called when the mouse is moved
 */
@@ -471,8 +494,8 @@ void		MotionFunc (int x, int y)
 {
   if (GLUT_DOWN == left_click)
     {
-      rotate_y = rotate_y + (y - yold) / 5.0;
-      rotate_x = rotate_x + (x - xold) / 5.0;
+      rotate_y = rotate_y + (y - yold) / 10.0;
+      rotate_x = rotate_x + (x - xold) / 10.0;
       if (rotate_y > 90)
 	rotate_y = 90;
       if (rotate_y < -90)
@@ -493,6 +516,67 @@ void		MotionFunc (int x, int y)
   xold = x;
   yold = y;
 }
+
+
+void keyboard (unsigned char key, int x, int y) {
+    x += y;
+
+    if (key=='q')
+    {
+    xrot += 1;
+    if (xrot >360) 
+      xrot -= 360;
+    }
+
+    if (key=='z')
+    {
+    xrot -= 1;
+    if (xrot < -360) 
+      xrot += 360;
+    }
+
+    if (key=='w')
+    {
+    float xrotrad, yrotrad;
+    yrotrad = (yrot / 180 * 3.141592654f);
+    xrotrad = (xrot / 180 * 3.141592654f);
+    xpos += (float) sin(yrotrad) ;
+    zpos -= (float) cos(yrotrad) ;
+    ypos -= (float)sin(xrotrad);
+    }
+
+    if (key=='s')
+    {
+    float xrotrad, yrotrad;
+    yrotrad = (yrot / 180 * 3.141592654f);
+    xrotrad = (xrot / 180 * 3.141592654f);
+    xpos -= (float)sin(yrotrad);
+    zpos += (float)cos(yrotrad) ;
+    ypos += (float)sin(xrotrad);
+    }
+
+    if (key=='d')
+    {
+    float yrotrad;
+    yrotrad = (yrot / 180 * 3.141592654f);
+    xpos += (float)cos(yrotrad) * 0.2;
+    zpos += (float)sin(yrotrad) * 0.2;
+    }
+
+    if (key=='a')
+    {
+    float yrotrad;
+    yrotrad = (yrot / 180 * 3.141592654f);
+    xpos -= (float)cos(yrotrad) * 0.2;
+    zpos -= (float)sin(yrotrad) * 0.2;
+    }
+
+    if (key==27)
+    {
+    exit(0);
+    }
+}
+
 
 
 int		main (int narg, char ** args)
@@ -552,9 +636,11 @@ int		main (int narg, char ** args)
   /* Declaration of the callbacks */
   glutDisplayFunc (&DisplayFunc);
   glutReshapeFunc (&ReshapeFunc);
-  glutKeyboardFunc (&KeyboardFunc);
+  //glutKeyboardFunc (&KeyboardFunc);
+  glutKeyboardFunc (&keyboard);
   glutMouseFunc (&MouseFunc);
   glutMotionFunc (&MotionFunc);
+  glutPassiveMotionFunc(mouseMovement);
 
   /* Loop */
   glutMainLoop ();
