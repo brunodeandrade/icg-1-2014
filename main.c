@@ -165,7 +165,15 @@ void		DisplayFunc (void)
   glRotatef (rotate_y, 1, 0, 0);
   glRotatef (rotate_x, 0, 1, 0);
 
-  gluLookAt(obsX,obsY,obsZ, 0,0,0, 0,1,0);
+  gluLookAt(0,0,1,0,0,0, 0,1,0);
+
+
+//  glTranslatef (0 ,0 ,−zoom ) ;
+glTranslatef ( obsX , obsY , obsZ ) ;
+glRotatef ( 0 ,1 ,0 ,0);
+glRotatef ( 0 ,0 ,1 ,0);
+  //gluLookAt(obsX,obsY,obsZ, 0,0,0, 0,0,1);
+  //gluLookAt(0,0,1, obsX,obsY,obsZ, 0,1,0);
   //glMatrixMode(GL_MODELVIEW); 
   //glutPostRedisplay();
 
@@ -430,10 +438,12 @@ void		KeyboardFunc (unsigned char key, int x, int y)
               obsY -=0.1;
               break;
 
-    case GLUT_KEY_HOME : 
+    case 'T' :
+    case 't' : 
               obsZ +=0.1;
               break;
-    case GLUT_KEY_END : 
+    case 'g' :
+    case 'G' : 
               obsZ -=0.1;
               break;
 
