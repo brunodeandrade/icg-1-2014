@@ -29,6 +29,7 @@
 #include "CG.h"
 
 #define		RESOLUTION 64
+#define PESO_ANDA 2
 
 static GLuint	texture;
 
@@ -119,7 +120,7 @@ int		load_texture (const char * filename,
 void		DisplayFunc (void)
 {
   const float t = glutGet (GLUT_ELAPSED_TIME) / 1000.;
-  const float delta = 10. / RESOLUTION;
+  const float delta = 15. / RESOLUTION;
   const unsigned int length = 2 * (RESOLUTION + 1);
   const float xn = (RESOLUTION + 1) * delta + 1;
   unsigned int i;
@@ -176,7 +177,7 @@ void		DisplayFunc (void)
     glRotatef(xrot,1.0,0.0,0.0);  //rotate our camera on teh x-axis (left and right)
     glRotatef(yrot,0.0,1.0,0.0);  //rotate our camera on the y-axis (up and down)
   }
-  glTranslated(-xpos,-ypos,-zpos); //translate the screen to the position of our camera
+  glTranslated(-xpos,-0.470175,-zpos); //translate the screen to the position of our camera
 
   // printf("xpos: %f, ypos: %f, zpos: %f\n\n",xpos,ypos,zpos);
   // printf("xrot: %f, yrot: %f, zrot: %f\n\n",xrot,yrot,zpos);
@@ -549,10 +550,11 @@ void keyboard (unsigned char key, int x, int y) {
     float xrotrad, yrotrad;
     yrotrad = (yrot / 180 * 3.141592654f);
     xrotrad = (xrot / 180 * 3.141592654f);
-    xpos += (float) sin(yrotrad) ;
-    zpos -= (float) cos(yrotrad) ;
-    ypos -= (float)sin(xrotrad);
-
+    xpos += (float) sin(yrotrad)/PESO_ANDA ;
+    zpos -= (float) cos(yrotrad)/PESO_ANDA ;
+    if(ypos > 0.1)
+      ypos -= (float)sin(xrotrad);
+    //printf("xpos: %f, ypos: %f, zpos: %f\n\n",xpos,ypos,zpos);
     }
 
     if (key=='s')
@@ -560,25 +562,27 @@ void keyboard (unsigned char key, int x, int y) {
     float xrotrad, yrotrad;
     yrotrad = (yrot / 180 * 3.141592654f);
     xrotrad = (xrot / 180 * 3.141592654f);
-    xpos -= (float)sin(yrotrad);
-    zpos += (float)cos(yrotrad) ;
-    ypos += (float)sin(xrotrad);
+    xpos -= (float)sin(yrotrad)/PESO_ANDA;
+    zpos += (float)cos(yrotrad)/PESO_ANDA;
+    if(ypos < 0.7)
+      ypos += (float)sin(xrotrad);
+    //printf("xpos: %f, ypos: %f, zpos: %f\n\n",xpos,ypos,zpos);
     }
 
     if (key=='d')
     {
     float yrotrad;
     yrotrad = (yrot / 180 * 3.141592654f);
-    xpos += (float)cos(yrotrad) * 0.2;
-    zpos += (float)sin(yrotrad) * 0.2;
+    xpos += (float)cos(yrotrad) * 0.2/PESO_ANDA;
+    zpos += (float)sin(yrotrad) * 0.2/PESO_ANDA;
     }
 
     if (key=='a')
     {
     float yrotrad;
     yrotrad = (yrot / 180 * 3.141592654f);
-    xpos -= (float)cos(yrotrad) * 0.2;
-    zpos -= (float)sin(yrotrad) * 0.2;
+    xpos -= (float)cos(yrotrad) * 0.2/PESO_ANDA;
+    zpos -= (float)sin(yrotrad) * 0.2/PESO_ANDA;
     }
 
 
