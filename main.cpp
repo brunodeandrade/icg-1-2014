@@ -196,9 +196,9 @@ void	DisplayFunc (void)
   glTranslated(-xpos,-0.470175,-zpos); //translate the screen to the position of our camera
 
   
-  // glPushMatrix();
+  glPushMatrix();
   obj->Draw();
-  //glPopMatrix();
+  glPopMatrix();
 
   // printf("xpos: %f, ypos: %f, zpos: %f\n\n",xpos,ypos,zpos);
   // printf("xrot: %f, yrot: %f, zrot: %f\n\n",xrot,yrot,zpos);
@@ -854,7 +854,7 @@ int	main (int narg, char ** args)
   leituraVertices();
   initSkybox();
   obj = new Model_OBJ();
-  obj->Load((char*)"palm_tree.obj");
+  obj->Load((char*)"palmeira.obj");
 
   
   //obsX = 20;
