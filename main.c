@@ -27,9 +27,22 @@
 #include <jerror.h>
 #include "noise.h"
 #include "CG.h"
+//#include "screencasts.h"
 
 #define		RESOLUTION 64
 #define PESO_ANDA 2
+
+/*Variaveis para skybox*/
+float camX=0.0,camY=0.0,camZ=5.0;
+float camYaw=0.0;
+float camPitch=0.0;
+enum {SKY_LEFT=0,SKY_BACK,SKY_RIGHT,SKY_FRONT,SKY_TOP,SKY_BOTTOM};      //constants for the skybox faces, so we don't have to remember so much number
+unsigned int skybox[6]; //the ids for the textures
+#ifndef M_PI
+#define M_PI 3.1415926535
+#endif
+void drawSkybox(float size);
+void drawCube(float size);
 
 static GLuint	texture;
 
@@ -164,7 +177,7 @@ void		DisplayFunc (void)
 
 
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+drawSkybox(20.0);
   glLoadIdentity ();
   glTranslatef (0, 0, -translate_z);
   ///glRotatef (rotate_y, 1, 0, 0);
@@ -172,12 +185,16 @@ void		DisplayFunc (void)
 
   // gluLookAt(0,0,1,rotate_x,1,0, 0,1,0);
   // gluLookAt(0,0,1,0,rotate_y,0, 0,1,0);
-
+ 
+  //drawCube(20);
   if(xrot >= 3 ){
     glRotatef(xrot,1.0,0.0,0.0);  //rotate our camera on teh x-axis (left and right)
     glRotatef(yrot,0.0,1.0,0.0);  //rotate our camera on the y-axis (up and down)
   }
   glTranslated(-xpos,-0.470175,-zpos); //translate the screen to the position of our camera
+
+  
+
 
   // printf("xpos: %f, ypos: %f, zpos: %f\n\n",xpos,ypos,zpos);
   // printf("xrot: %f, yrot: %f, zrot: %f\n\n",xrot,yrot,zpos);
@@ -338,8 +355,7 @@ glRotatef ( 0 ,0 ,1 ,0);*/
 
   glTranslatef (0, 0.2, 0);
 
-
-  //display(angle);
+  display(angle);
 
   angle += 0.5;
   if(angle > 360)
@@ -379,7 +395,7 @@ glRotatef ( 0 ,0 ,1 ,0);*/
 
       glEnd ();
     }
-
+    
   /* End */
   glFlush ();
   glutSwapBuffers ();
@@ -594,6 +610,221 @@ void keyboard (unsigned char key, int x, int y) {
 
 
 
+
+unsigned int loadTexBMP( const char * filename )
+{
+
+  unsigned int texture;
+
+  int width, height;
+
+  unsigned char * data;
+
+  FILE * file;
+
+  file = fopen( filename, "rb" );
+
+  if ( file == NULL ) return 0;
+  width = 1024;
+  height = 1024;
+  data = (unsigned char *)malloc( width * height * 3 );
+  //int size = fseek(file,);
+  fread( data, width * height * 3, 1, file );
+  fclose( file );
+  int i;
+ for(i = 0; i < width * height ; ++i)
+{
+   int index = i*3;
+   unsigned char B,R;
+   B = data[index];
+   R = data[index+2];
+
+   data[index] = R;
+   data[index+2] = B;
+
+}
+
+
+glGenTextures( 1, &texture );
+glBindTexture( GL_TEXTURE_2D, texture );
+glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,GL_MODULATE );
+glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_NEAREST );
+
+
+glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR );
+glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,GL_REPEAT );
+glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,GL_REPEAT );
+gluBuild2DMipmaps( GL_TEXTURE_2D, 3, width, height,GL_RGB, GL_UNSIGNED_BYTE, data );
+free( data );
+
+return texture;
+}
+
+
+
+
+
+
+
+void initSkybox(void) {
+/*
+SKY_FRONT 0
+SKY_RIGHT 1
+SKY_LEFT 2
+SKY_BACK 3
+SKY_UP 4
+SKY_DOWN 5
+*/
+skybox[SKY_FRONT] = loadTexBMP("txStormydays_front.bmp");
+skybox[SKY_RIGHT] = loadTexBMP("txStormydays_right.bmp");
+skybox[SKY_LEFT] = loadTexBMP("txStormydays_left.bmp");
+skybox[SKY_BACK] = loadTexBMP("txStormydays_back.bmp");
+skybox[SKY_TOP] = loadTexBMP("txStormydays_up.bmp");
+skybox[SKY_BOTTOM] = loadTexBMP("txStormydays_down.bmp");
+
+}
+
+void killskybox(void){
+        glDeleteTextures(6,&skybox[0]);
+}
+
+
+void drawSkybox(float size)
+{
+        int b1=glIsEnabled(GL_TEXTURE_2D);     //new, we left the textures turned on, if it was turned on
+        glDisable(GL_LIGHTING); //turn off lighting, when making the skybox
+        glDisable(GL_DEPTH_TEST);       //turn off depth texting
+        glEnable(GL_TEXTURE_2D);        //and turn on texturing
+        glBindTexture(GL_TEXTURE_2D,skybox[SKY_BACK]);  //use the texture we want
+        glBegin(GL_QUADS);      //and draw a face
+                //back face
+                glTexCoord2f(0,0);      //use the correct texture coordinate
+                glVertex3f(size/2,size/2,size/2);       //and a vertex
+                glTexCoord2f(1,0);      //and repeat it...
+                glVertex3f(-size/2,size/2,size/2);
+                glTexCoord2f(1,1);
+                glVertex3f(-size/2,-size/2,size/2);
+                glTexCoord2f(0,1);
+                glVertex3f(size/2,-size/2,size/2);
+        glEnd();
+        glBindTexture(GL_TEXTURE_2D,skybox[SKY_LEFT]);
+        glBegin(GL_QUADS);     
+                //left face
+                glTexCoord2f(0,0);
+                glVertex3f(-size/2,size/2,size/2);
+                glTexCoord2f(1,0);
+                glVertex3f(-size/2,size/2,-size/2);
+                glTexCoord2f(1,1);
+                glVertex3f(-size/2,-size/2,-size/2);
+                glTexCoord2f(0,1);
+                glVertex3f(-size/2,-size/2,size/2);
+        glEnd();
+        glBindTexture(GL_TEXTURE_2D,skybox[SKY_FRONT]);
+        glBegin(GL_QUADS);     
+                //front face
+                glTexCoord2f(1,0);
+                glVertex3f(size/2,size/2,-size/2);
+                glTexCoord2f(0,0);
+                glVertex3f(-size/2,size/2,-size/2);
+                glTexCoord2f(0,1);
+                glVertex3f(-size/2,-size/2,-size/2);
+                glTexCoord2f(1,1);
+                glVertex3f(size/2,-size/2,-size/2);
+        glEnd();
+        glBindTexture(GL_TEXTURE_2D,skybox[SKY_RIGHT]);
+        glBegin(GL_QUADS);     
+                //right face
+                glTexCoord2f(0,0);
+                glVertex3f(size/2,size/2,-size/2);
+                glTexCoord2f(1,0);
+                glVertex3f(size/2,size/2,size/2);
+                glTexCoord2f(1,1);
+                glVertex3f(size/2,-size/2,size/2);
+                glTexCoord2f(0,1);
+                glVertex3f(size/2,-size/2,-size/2);
+        glEnd();
+        glBindTexture(GL_TEXTURE_2D,skybox[SKY_TOP]);          
+        glBegin(GL_QUADS);                      //top face
+                glTexCoord2f(1,0);
+                glVertex3f(size/2,size/2,size/2);
+                glTexCoord2f(0,0);
+                glVertex3f(-size/2,size/2,size/2);
+                glTexCoord2f(0,1);
+                glVertex3f(-size/2,size/2,-size/2);
+                glTexCoord2f(1,1);
+                glVertex3f(size/2,size/2,-size/2);
+        glEnd();
+        glBindTexture(GL_TEXTURE_2D,skybox[SKY_BOTTOM]);               
+        glBegin(GL_QUADS);     
+                //bottom face
+                glTexCoord2f(1,1);
+                glVertex3f(size/2,-size/2,size/2);
+                glTexCoord2f(0,1);
+                glVertex3f(-size/2,-size/2,size/2);
+                glTexCoord2f(0,0);
+                glVertex3f(-size/2,-size/2,-size/2);
+                glTexCoord2f(1,0);
+                glVertex3f(size/2,-size/2,-size/2);
+        glEnd();
+        glEnable(GL_LIGHTING);  //turn everything back, which we turned on, and turn everything off, which we have turned on.
+        glEnable(GL_DEPTH_TEST);
+        if(!b1)
+                glDisable(GL_TEXTURE_2D);
+}
+
+void drawCube(float size)
+{
+        float difamb[]={1.0,0.5,0.3,1.0};
+        glBegin(GL_QUADS);
+                //front face
+                glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,difamb);
+                glNormal3f(0.0,0.0,1.0);
+                glVertex3f(size/2,size/2,size/2);
+                glVertex3f(-size/2,size/2,size/2);
+                glVertex3f(-size/2,-size/2,size/2);
+                glVertex3f(size/2,-size/2,size/2);
+ 
+                //left face
+                glNormal3f(-1.0,0.0,0.0);
+                glVertex3f(-size/2,size/2,size/2);
+                glVertex3f(-size/2,size/2,-size/2);
+                glVertex3f(-size/2,-size/2,-size/2);
+                glVertex3f(-size/2,-size/2,size/2);
+ 
+                //back face
+                glNormal3f(0.0,0.0,-1.0);
+                glVertex3f(size/2,size/2,-size/2);
+                glVertex3f(-size/2,size/2,-size/2);
+                glVertex3f(-size/2,-size/2,-size/2);
+                glVertex3f(size/2,-size/2,-size/2);
+ 
+                //right face
+                glNormal3f(1.0,0.0,0.0);
+                glVertex3f(size/2,size/2,-size/2);
+                glVertex3f(size/2,size/2,size/2);
+                glVertex3f(size/2,-size/2,size/2);
+                glVertex3f(size/2,-size/2,-size/2);
+ 
+                //top face
+                glNormal3f(0.0,1.0,0.0);
+                glVertex3f(size/2,size/2,size/2);
+                glVertex3f(-size/2,size/2,size/2);
+                glVertex3f(-size/2,size/2,-size/2);
+                glVertex3f(size/2,size/2,-size/2);
+ 
+                //bottom face
+                glNormal3f(0.0,-1.0,0.0);
+                glVertex3f(size/2,-size/2,size/2);
+                glVertex3f(-size/2,-size/2,size/2);
+                glVertex3f(-size/2,-size/2,-size/2);
+                glVertex3f(size/2,-size/2,-size/2);
+        glEnd();
+}
+
+
+
+
+
 int		main (int narg, char ** args)
 {
   unsigned char total_texture[4 * 256 * 256];
@@ -613,10 +844,14 @@ int		main (int narg, char ** args)
   glClearColor (0, 0, 0, 0);
   glEnable (GL_DEPTH_TEST);
   glEnable (GL_BLEND);
+  glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   leituraVertices();
+  initSkybox();
+  
 
   
   //obsX = 20;
@@ -647,7 +882,7 @@ int		main (int narg, char ** args)
   glEnable (GL_TEXTURE_GEN_T);
   glTexGeni (GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
   glTexGeni (GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-
+  
   /* Declaration of the callbacks */
   glutDisplayFunc (&DisplayFunc);
   glutReshapeFunc (&ReshapeFunc);
