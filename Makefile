@@ -25,19 +25,18 @@ DIRECTORY	=	Water
 
 ARCHIVE		=	tar -cvzf
 
-CC		=	gcc
+CC		=	g++
 
 ECHO		=	@echo
 
 RM		=	rm -f
 
-SRC		=	main.c			\
+SRC		=	main.cpp			\
 			noise.c			\
 			CG.c
 
 CFLAGS		=	-Wall			\
 			-W			\
-			-Wstrict-prototypes	\
 			-Werror
 
 IFLAGS		=	-I/usr/include		\
