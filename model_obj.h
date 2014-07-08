@@ -169,7 +169,7 @@ void Model_OBJ::Release()
 
 void Model_OBJ::Draw()
 {
-	cout<<"OLHA PRA MIM"<<endl;
+
  	glEnableClientState(GL_VERTEX_ARRAY);						// Enable vertex arrays
  	glEnableClientState(GL_NORMAL_ARRAY);						// Enable normal arrays
 	glVertexPointer(3,GL_FLOAT,	0,Faces_Triangles);				// Vertex Pointer to triangle array

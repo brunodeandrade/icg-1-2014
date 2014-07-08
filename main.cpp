@@ -196,7 +196,9 @@ void	DisplayFunc (void)
   glTranslated(-xpos,-0.470175,-zpos); //translate the screen to the position of our camera
 
   
-
+  // glPushMatrix();
+  obj->Draw();
+  //glPopMatrix();
 
   // printf("xpos: %f, ypos: %f, zpos: %f\n\n",xpos,ypos,zpos);
   // printf("xrot: %f, yrot: %f, zrot: %f\n\n",xrot,yrot,zpos);
@@ -359,9 +361,7 @@ normal[indice + 2] = 0;
 
   //display(angle);
 
- // glPushMatrix();
-  obj->Draw();
-  //glPopMatrix();
+ 
 
   angle += 0.5;
   if(angle > 360)
