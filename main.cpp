@@ -45,14 +45,14 @@ unsigned int skybox[6]; //the ids for the textures
 void drawSkybox(float size);
 void drawCube(float size);
 
-static GLuint	texture;
+static GLuint texture;
 
-static int	left_click = GLUT_UP;
-static int	right_click = GLUT_UP;
-static int	wire_frame = 0;
-static int	normals = 0;
-static int	xold = 0;
-static int	yold = 0;
+static int  left_click = GLUT_UP;
+static int  right_click = GLUT_UP;
+static int  wire_frame = 0;
+static int  normals = 0;
+static int  xold = 0;
+static int  yold = 0;
 Model_OBJ *obj;
 //static int tamanhox, tamanhoy;
 
@@ -60,19 +60,19 @@ Model_OBJ *obj;
 
 static GLdouble obsX = -2.400000, obsY = 0.4, obsZ = 1.30;
 int cont = 0;
-static float	rotate_x = 30;
-static float	rotate_y = 15;
-static float	translate_z = 4;
+static float  rotate_x = 30;
+static float  rotate_y = 15;
+static float  translate_z = 4;
 float angle = 0.0;
-static float	surface[6 * RESOLUTION * (RESOLUTION + 1)];
-static float	normal[6 * RESOLUTION * (RESOLUTION + 1)];
+static float  surface[6 * RESOLUTION * (RESOLUTION + 1)];
+static float  normal[6 * RESOLUTION * (RESOLUTION + 1)];
 
 float xpos = 0.568, ypos = 0.6351, zpos = 3.2824, xrot = 3, yrot = 68;
 
 float lastx, lasty;
 
 
-static float	z (const float x, const float y, const float t)
+static float  z (const float x, const float y, const float t)
 {
   const float x2 = x - 3;
   const float y2 = y + 1;
@@ -86,7 +86,7 @@ Noise (10 * x, 10 * y, t, 0)) / 200);
 /*
 ** Function to load a Jpeg file.
 */
-int	load_texture (const char * filename,
+int load_texture (const char * filename,
 unsigned char * dest,
 const int format,
 const unsigned int size)
@@ -132,7 +132,7 @@ return 1;
 /*
 ** Function called to update rendering
 */
-void	DisplayFunc (void)
+void  DisplayFunc (void)
 {
   const float t = glutGet (GLUT_ELAPSED_TIME) / 1000.;
   const float delta = 15. / RESOLUTION;
@@ -179,7 +179,9 @@ void	DisplayFunc (void)
 
 
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glPushMatrix();
   drawSkybox(20.0);
+  glPopMatrix();
   glLoadIdentity ();
   glTranslatef (0, 0, -translate_z);
   ///glRotatef (rotate_y, 1, 0, 0);
@@ -197,10 +199,11 @@ void	DisplayFunc (void)
 
   
   glPushMatrix();
+  glTranslatef(5.951852,0.01,6.481321);
   obj->Draw();
   glPopMatrix();
 
-  // printf("xpos: %f, ypos: %f, zpos: %f\n\n",xpos,ypos,zpos);
+  printf("xpos: %f, ypos: %f, zpos: %f\n\n",xpos,ypos,zpos);
   // printf("xrot: %f, yrot: %f, zrot: %f\n\n",xrot,yrot,zpos);
 
 /*
@@ -411,7 +414,7 @@ surface[indice + 2] + normal[indice + 2] / 50);
 /*
 ** Function called when the window is created or resized
 */
-void	ReshapeFunc (int width, int height)
+void  ReshapeFunc (int width, int height)
 {
   glMatrixMode(GL_PROJECTION);
 
@@ -425,7 +428,7 @@ void	ReshapeFunc (int width, int height)
 /*
 ** Function called when a key is hit
 */
-void	KeyboardFunc (unsigned char key, int x, int y)
+void  KeyboardFunc (unsigned char key, int x, int y)
 {
   xold = x; /* Has no effect: just to avoid a warning */
   yold = y;
@@ -490,7 +493,7 @@ normals = 0;
 /*
 ** Function called when a mouse button is hit
 */
-void	MouseFunc (int button, int state, int x, int y)
+void  MouseFunc (int button, int state, int x, int y)
 {
   if (GLUT_LEFT_BUTTON == button)
     left_click = state;
@@ -506,7 +509,7 @@ void	MouseFunc (int button, int state, int x, int y)
 /*
 ** Function called when the mouse is moved
 */
-void	MotionFunc (int x, int y)
+void  MotionFunc (int x, int y)
 {
   if (GLUT_DOWN == left_click)
     {
@@ -827,7 +830,7 @@ void drawCube(float size)
 
 
 
-int	main (int narg, char ** args)
+int main (int narg, char ** args)
 {
   unsigned char total_texture[4 * 256 * 256];
   unsigned char alpha_texture[256 * 256];
@@ -854,7 +857,7 @@ int	main (int narg, char ** args)
   leituraVertices();
   initSkybox();
   obj = new Model_OBJ();
-  obj->Load((char*)"palmeira.obj");
+  obj->Load((char*)"second_island_novo.obj");
 
   
   //obsX = 20;
@@ -901,5 +904,3 @@ GL_UNSIGNED_BYTE, total_texture);
   /* Never reached */
   return 0;
 }
-
-/* ========================================================================= */
