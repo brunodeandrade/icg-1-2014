@@ -26,7 +26,6 @@
 #include <jpeglib.h>
 #include <jerror.h>
 #include "noise.h"
-#include "CG.h"
 #include "model_obj.h"
 //#include "screencasts.h"
 
@@ -870,7 +869,7 @@ int main (int narg, char ** args)
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-  leituraVertices();
+
   initSkybox();
   ilha = new Model_OBJ();
   ilha->Load((char*)"ilha_mais_bonita.obj");
