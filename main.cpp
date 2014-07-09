@@ -222,7 +222,7 @@ void  DisplayFunc (void)
   printf("xpos: %f, ypos: %f, zpos: %f\n\n",xpos,ypos,zpos);
   // printf("xrot: %f, yrot: %f, zrot: %f\n\n",xrot,yrot,zpos);
 
-/*
+/* 
 glTranslatef ( obsX , obsY , obsZ ) ;
 printf("x: %f y: %f, z: %f",obsX,obsY,obsZ);
 printf("\n\n");
