@@ -53,7 +53,10 @@ static int  wire_frame = 0;
 static int  normals = 0;
 static int  xold = 0;
 static int  yold = 0;
-Model_OBJ *obj;
+
+Model_OBJ *ilha;
+Model_OBJ *palmeira;
+Model_OBJ *bola;
 //static int tamanhox, tamanhoy;
 
 //gluPerspective (20, width / (float) height, 0.1, 15);
@@ -200,7 +203,20 @@ void  DisplayFunc (void)
   
   glPushMatrix();
   glTranslatef(5.951852,0.01,6.481321);
-  obj->Draw();
+  glScalef(0.5,0.5,0.5);
+  ilha->Draw();
+  glPopMatrix();
+
+  glPushMatrix();
+  glTranslatef(6,0.6,6.481321);
+  glScalef(0.2,0.2,0.2);
+  bola->Draw();
+  glPopMatrix();
+
+  glPushMatrix();
+  glTranslatef(7.19,0.01,6.481321);
+  glScalef(0.2,0.2,0.2);
+  palmeira->Draw();
   glPopMatrix();
 
   printf("xpos: %f, ypos: %f, zpos: %f\n\n",xpos,ypos,zpos);
@@ -856,8 +872,14 @@ int main (int narg, char ** args)
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   leituraVertices();
   initSkybox();
-  obj = new Model_OBJ();
-  obj->Load((char*)"second_island_novo.obj");
+  ilha = new Model_OBJ();
+  ilha->Load((char*)"ilha_mais_bonita.obj");
+
+  palmeira = new Model_OBJ();
+  palmeira->Load((char*)"palm_tree.obj");
+
+  bola = new Model_OBJ();
+  bola->Load((char*)"ball.obj");
 
   
   //obsX = 20;
